@@ -20,4 +20,8 @@ def download(url):
 def json_courses(args):
     acc = []
     for sub in args.subjects:
-        url = "https://classes.cornell.edu/api/2.0/"
+        url = "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
+            "roster=" + args.semester + \
+                "&subject=" + sub
+        courses = download(url)
+        print(f"Classes for {sub} downloaded successfully")
