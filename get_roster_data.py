@@ -33,6 +33,7 @@ def json_courses(args):
         url = "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
             "roster=" + args.semester + \
                 "&subject=" + sub
+        print(url)
         courses = download(url)
         print(f"Classes for {sub} downloaded successfully")
         acc.extend(courses["classes"])
@@ -72,11 +73,17 @@ def main():
     args = parser.parse_args()
 
     if args.output is None:
-        s = json.dumps(args.func(args), indent=2)
-        print(s)
+        try:
+            s = json.dumps(args.func(args), indent=2)
+            print(s)
+        except AttributeError:
+            parser.error("too few arguments") # from https://bit.ly/2qSyjk8
     else:
         with open(args.output, 'w') as out:
-            json.dump(args.func(args), out, indent=2)
+            try:
+                json.dump(args.func(args), out, indent=2)
+            except AttributeError:
+                parser.error("too few arguments")
 
 if __name__ == "__main__":
     main()
