@@ -1,4 +1,6 @@
-# credits to rrc84 for providing guidance of implementation
+# credits to rrc84 for providing guidance of implementation from CS 3110
+# heavily inspired/drawn from his implementation here:
+# https://github.coecis.cornell.edu/wm274/cs3110-a6/blob/master/get_json.py
 
 import urllib.request as rq
 import argparse
@@ -45,16 +47,36 @@ def json_subjects(args):
     subjects = download(url)
     return subjects["subjects"]
 
-parser = argparse.ArgumentParser(
-    prog="python get_roster_data.py",
-    description="Fetches a JSON file from the Cornell Roster."
-)
-parser.add_argument('-o', '--output', metavar='FILE', default=None, \
-    help="Specify a file to output to.")
+def main():
+    parser = argparse.ArgumentParser(
+        prog="python get_roster_data.py",
+        description="Fetches a JSON file from the Cornell Roster."
+    )
+    parser.add_argument('-o', '--output', metavar='FILE', default=None, \
+        help="Specify a file to output to.")
 
-subparser = parser.add_subparsers()
-course_parser = subparser.add_parser("courses", \
-    help="Get JSON that lists courses for the given subjects")
-course_parser.add_argument('-s', '--semester', metavar="SEM", required=True, \
-    help="Specify a semester [SP, SU, FA, WI] and last 2 digits of year")
-    
+    subparser = parser.add_subparsers()
+    course_parser = subparser.add_parser("courses", \
+        help="Get JSON that lists courses for the given subjects")
+    course_parser.add_argument('-s', '--semester', metavar="SEM", required=True, \
+        help="Specify a semester [SP, SU, FA, WI] and last 2 digits of year")
+    course_parser.add_argument('subjects', nargs='+', metavar='sub', help="the subject from the roster")
+    course_parser.set_defaults(func=json_courses)
+
+    subject_parser = subparser.add_parser("subjects", \
+        help="Get JSON that lists available subjects for the semester")
+    subject_parser.add_argument('-s', '--semester', metavar='SEM', required=True,
+                                help="Specify a semester [SP, SU, FA, WI] and last 2 digits of year")
+    subject_parser.set_defaults(func=json_subjects)
+
+    args = parser.parse_args()
+
+    if args.output is None:
+        s = json.dumps(args.func(args), indent=2)
+        print(s)
+    else:
+        with open(args.output, 'w') as out:
+            json.dump(args.func(args), out, indent=2)
+
+if __name__ == "__main__":
+    main()
