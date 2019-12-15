@@ -33,7 +33,6 @@ def json_courses(args):
         url = "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
             "roster=" + args.semester + \
                 "&subject=" + sub
-        print(url)
         courses = download(url)
         print(f"Classes for {sub} downloaded successfully")
         acc.extend(courses["classes"])
